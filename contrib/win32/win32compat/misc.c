@@ -1211,7 +1211,7 @@ readpassphrase(const char *prompt, char *outBuf, size_t outBufLen, int flags)
 			current_index += utf8_read;
 
 			if(flags & RPP_ECHO_ON)
-				wprintf_s("%c", ch);
+				wprintf_s(L"%c", ch);
 		}
 	}
 
