@@ -94,6 +94,8 @@ set_defaultshell()
 		if ((command_option_local = utf16_to_utf8(option_buf)) == NULL)
 			goto cleanup;
 
+	convertToBackslash(pw_shellpath_local);
+	to_lower_case(pw_shellpath_local);
 	pw_shellpath = pw_shellpath_local;
 	pw_shellpath_local = NULL;
 	shell_command_option = command_option_local;
@@ -265,7 +267,7 @@ getpwnam_placeholder(const char* user) {
 		errno = EOTHER;
 		goto cleanup;
 	}
-	pw_name = strdup(user);
+	pw_name = _strdup(user);
 	pw_dir = utf16_to_utf8(tmp_home);
 
 	if (!pw_name || !pw_dir) {
@@ -303,18 +305,9 @@ w32_getpwnam(const char *user_utf8)
 		return ret;
 
 	/* check if custom passwd auth is enabled */
-	{
-		int lsa_auth_pkg_len = 0;
-		HKEY reg_key = 0;
+	if (get_custom_lsa_package())
+		ret = getpwnam_placeholder(user_utf8);
 
-		REGSAM mask = STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_WOW64_64KEY;
-		if ((RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\OpenSSH", 0, mask, &reg_key) == ERROR_SUCCESS) &&
-		    (RegQueryValueExW(reg_key, L"LSAAuthenticationPackage", 0, NULL, NULL, &lsa_auth_pkg_len) == ERROR_SUCCESS))
-			ret = getpwnam_placeholder(user_utf8);
-
-		if (reg_key)
-			RegCloseKey(reg_key);
-	}
 	return ret;
 }
 
@@ -324,7 +317,7 @@ w32_getpwuid(uid_t uid)
 	struct passwd* ret = NULL;
 	PSID cur_user_sid = NULL;
 	
-	if ((cur_user_sid = get_user_sid(NULL)) == NULL)
+	if ((cur_user_sid = get_sid(NULL)) == NULL)
 		goto cleanup;
 
 	ret = get_passwd(NULL, cur_user_sid);
