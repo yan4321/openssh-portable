@@ -143,8 +143,7 @@ process_request(struct agent_connection* con)
 	case SSH_AGENTC_ADD_RSA_IDENTITY:
 	case SSH_AGENTC_REMOVE_RSA_IDENTITY:
 	case SSH_AGENTC_REMOVE_ALL_RSA_IDENTITIES:
-		debug("agent request %d: ssh protocol 1 is not supported", type);
-		r = 0;
+		r = process_unsupported_request(request, response, con);
 		break;
 	case SSH2_AGENTC_ADD_IDENTITY:
 		r =  process_add_identity(request, response, con);
