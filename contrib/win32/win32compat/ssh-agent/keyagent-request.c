@@ -395,7 +395,8 @@ process_sign_request(struct sshbuf* request, struct sshbuf* response, struct age
 					goto done;
 				provider[provider_len] = '\0';
 				epin[epin_len] = '\0';
-				if (convert_blob(con, epin, epin_len, &pin, &pin_len, 0) != 0) {
+				if (convert_blob(con, epin, epin_len, &pin, &pin_len, 0) != 0 ||
+					(pin = realloc(pin, pin_len + 1)) == NULL) {
 					goto done;
 				}
 				pin[pin_len] = '\0';
