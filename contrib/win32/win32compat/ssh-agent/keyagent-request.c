@@ -321,10 +321,10 @@ static int sign_blob(const struct sshkey *pubkey, u_char ** sig, size_t *siglen,
 	else
 		is_pkcs11_key = 1;
 #endif /* ENABLE_PKCS11 */
-  if (flags & SSH_AGENT_RSA_SHA2_256)
-	  algo = "rsa-sha2-256";
+	if (flags & SSH_AGENT_RSA_SHA2_256)
+		algo = "rsa-sha2-256";
 	else if (flags & SSH_AGENT_RSA_SHA2_512)
-	  algo = "rsa-sha2-512";
+		algo = "rsa-sha2-512";
   
 	if (sshkey_sign(prikey, sig, siglen, blob, blen, algo, 0) != 0) {
 		debug("cannot sign using retrieved key");
